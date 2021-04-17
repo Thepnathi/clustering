@@ -56,5 +56,3 @@ if __name__ == "__main__":
     cat = data_handler.get_label_categories()
     label, feature = data_handler.get_label_dataset(), data_handler.get_feature_dataset()
     
-    for i in range(len(label)):
-        print(f'{label[i]} - {feature[i]}')

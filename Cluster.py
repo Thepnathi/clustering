@@ -15,8 +15,8 @@ class Cluster():
         # or by number of iteration specified
         convergence_steps = 0
         feature_belongs_to_cluster = []
-        while convergence_steps < 10:
-            print(convergence_steps)
+        while True:
+            convergence_steps += 1
             # Step 2: Assignment phase
             # Assign each feature points to a cluster or representative
             feature_belongs_to_cluster_temp = []     # Stores the index of representative that match the index feature dataset
@@ -32,11 +32,9 @@ class Cluster():
             # Calculate new representative - mean of all item within the cluste
             representative = self.compute_new_representative(representative, feature_belongs_to_cluster_temp, feature_dataset)
             if feature_belongs_to_cluster_temp == feature_belongs_to_cluster:
-                    print("No features has changed cluster group")
+                    break
             feature_belongs_to_cluster = feature_belongs_to_cluster_temp
-            convergence_steps += 1
-
-        return feature_belongs_to_cluster
+        return feature_belongs_to_cluster, representative
 
     # For each representative, calculate the mean value of each feature
     def compute_new_representative(self, representative, feature_belongs_to_cluster_temp, feature_dataset):
@@ -58,8 +56,18 @@ class Cluster():
         return sqrt(total)
         
 
-    def compute_precision(self):
-        pass
+    def compute_precision(self, feature_dataset, label_dataset, category, feature_belongs_to_cluster, representative):
+        # for each cluster we will calculate tje dominant label
+        for i in range(len(representative)):
+            category_count = {label[0]: 0 for label in category}
+            # Iterate through the whole feature dataset with the label to indicate which cluster it belongs to 
+            for j in range(len(feature_belongs_to_cluster)):
+                if feature_belongs_to_cluster[j] == i: # This feature belongs to the current cluster
+                    # Now we want to find out what it is 
+                    for label in category:
+                        if label_dataset[j] in label[1]:
+                            category_count[label[0]] += 1
+            print(category_count)
 
     def compute_recall(self):
         pass
@@ -78,8 +86,5 @@ if __name__ == "__main__":
     cat = data_handler.get_label_categories()
     label, feature = data_handler.get_label_dataset(), data_handler.get_feature_dataset()
 
-    a = cluster.k_means(feature, 5)
-
-    # rep = [[0, 0, 0]]
-    # feature_belongs_to_cluster_temp = [0, 0, 1, 1] # feature corresponds to one of the rep index
-    # feature = [[10, 20, 30], [30, 20, 30], [5, 20, 30], [99, 99, 99]]
+    feature_belongs_to_cluster, representative = cluster.k_means(feature, 4)
+    cluster.compute_precision(feature, label, cat, feature_belongs_to_cluster, representative)
