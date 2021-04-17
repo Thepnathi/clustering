@@ -25,7 +25,8 @@ class Dataset_Handler:
             line = line.strip("\n")
             split_line_by_delimeter = line.split(" ")  # each line will be splited by a delimeter and return as list
             labels.append(split_line_by_delimeter[0])
-            features.append(split_line_by_delimeter[1:])
+            float_feature = [float(item) for item in split_line_by_delimeter[1:]]
+            features.append(float_feature)
 
         return labels, features
 
