@@ -4,6 +4,11 @@ from random import randrange
 from Dataset_Handler import Dataset_Handler
 
 class Cluster():
+    def __init__(self, label_dataset, feature_dataset, category):
+        self.label_dataset = label_dataset
+        self.feature_dataset = feature_dataset
+        self.category = category
+
     def k_means(self, feature_dataset, k: int):
         # Step 1: Initialisation phase
         representative = [] # Contains the k representative of clusters or points as the centroid of clusters
@@ -55,9 +60,9 @@ class Cluster():
             total += pow(vec1[i]- vec2[i], 2)
         return sqrt(total)
         
-
+    # It is the number the same catgory or type of object over all the object in the cluster
     def compute_precision(self, feature_dataset, label_dataset, category, feature_belongs_to_cluster, representative):
-        # for each cluster we will calculate tje dominant label
+        # for each cluster we will calculate the dominant label
         for i in range(len(representative)):
             category_count = {label[0]: 0 for label in category}
             # Iterate through the whole feature dataset with the label to indicate which cluster it belongs to 
@@ -69,8 +74,19 @@ class Cluster():
                             category_count[label[0]] += 1
             print(category_count)
 
-    def compute_recall(self):
-        pass
+    # It is the number of instance of an object in a cluster over all of the dataset
+    def compute_recall(self, feature_belongs_to_cluster, representative):
+        for i in range(len(representative)):
+            category_count = {label[0]: 0 for label in self.category}
+            for j in range(len(feature_belongs_to_cluster)):
+                if feature_belongs_to_cluster[j] == i:
+                    for label in category:
+                        if label_dataset[j] in label[1]:
+                            category_count[label[0]] += 1
+            print(category_count)
+            for obj in self.category:
+                if obj[0] in category_count:
+                    print(f'{category_count[obj[0]]} / {len(obj[1])}') 
 
     def compute_f_score(self):
         pass
@@ -81,10 +97,12 @@ class Cluster():
 
 if __name__ == "__main__":
     data_handler = Dataset_Handler()
-    cluster = Cluster()
-    data_handler.load_multiple_dataset("animals", "countries", "fruits", "veggies")
-    cat = data_handler.get_label_categories()
-    label, feature = data_handler.get_label_dataset(), data_handler.get_feature_dataset()
+    data_handler.load_multiple_dataset("animals", "countries", "fruits", "veggies") # Load the four category data files and merge into one
 
-    feature_belongs_to_cluster, representative = cluster.k_means(feature, 4)
-    cluster.compute_precision(feature, label, cat, feature_belongs_to_cluster, representative)
+    category = data_handler.get_label_categories()
+    label_dataset, feature_dataset = data_handler.get_label_dataset(), data_handler.get_feature_dataset()
+
+    cluster = Cluster(label_dataset, feature_dataset, category)
+
+    feature_belongs_to_cluster, representative = cluster.k_means(feature_dataset, 4)
+    cluster.compute_recall(feature_belongs_to_cluster, representative)
