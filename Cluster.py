@@ -64,8 +64,8 @@ class Cluster():
     def compute_f_score(self, precision_per_cluster, recall_per_cluster):
         f_score_per_cluster = []
         for i in range(len(precision_per_cluster)):
-            precision = precision_per_cluster[i]
-            recall = recall_per_cluster[i]
+            precision = precision_per_cluster[i][1]
+            recall = recall_per_cluster[i][1]
             f_score = (2 * precision * recall) / (precision + recall) 
             f_score_per_cluster.append(f_score)
         return f_score_per_cluster
