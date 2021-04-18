@@ -15,15 +15,12 @@ class Cluster():
         for _ in range(k):
             random_representative = feature_dataset[randrange(len(feature_dataset))]  
             representative.append(random_representative) # What happens if we have the same representative?
-        # Repeat until convergence.
-        # This means no objects have moved among clusters
-        # or by number of iteration specified
+        # Repeat until convergence - (no object has moved or by specified n iteration)
         convergence_steps = 0
         feature_belongs_to_cluster = []
         while True:
             convergence_steps += 1
-            # Step 2: Assignment phase
-            # Assign each feature points to a cluster or representative
+            # Step 2: Assignment phase.  Assign each feature points to a cluster or representative
             feature_belongs_to_cluster_temp = []     # Stores the index of representative that match the index feature dataset
             for _, row in enumerate(feature_dataset):
                 min_dist, closest_rep = maxsize, None
@@ -33,8 +30,7 @@ class Cluster():
                         min_dist = distance
                         closest_rep = j
                 feature_belongs_to_cluster_temp.append(closest_rep)
-            # Step 3: Optimisation phase
-            # Calculate new representative - mean of all item within the cluste
+            # Step 3: Optimisation phase. Calculate new representative - mean of all item within the cluster
             representative = self.compute_new_representative(representative, feature_belongs_to_cluster_temp, feature_dataset)
             if feature_belongs_to_cluster_temp == feature_belongs_to_cluster:
                     break
@@ -61,32 +57,53 @@ class Cluster():
         return sqrt(total)
         
     # It is the number the same catgory or type of object over all the object in the cluster
-    def compute_precision(self, feature_dataset, label_dataset, category, feature_belongs_to_cluster, representative):
+    def compute_precision(self, feature_belongs_to_cluster, representative):
+        result = []
         # for each cluster we will calculate the dominant label
         for i in range(len(representative)):
-            category_count = {label[0]: 0 for label in category}
+            object_type_count = {object_type[0]: 0 for object_type in self.category}
             # Iterate through the whole feature dataset with the label to indicate which cluster it belongs to 
             for j in range(len(feature_belongs_to_cluster)):
                 if feature_belongs_to_cluster[j] == i: # This feature belongs to the current cluster
                     # Now we want to find out what it is 
-                    for label in category:
+                    for label in self.category:
                         if label_dataset[j] in label[1]:
-                            category_count[label[0]] += 1
-            print(category_count)
+                            object_type_count[label[0]] += 1
+            # Iterate through all the objects in current cluster and find object type that appeared most and divide by total objects in cluster
+            total_objects_in_cluster = 0
+            dominant_object_type = ["label", -1]
+            for category in object_type_count:
+                total_objects_in_cluster += object_type_count[category]
+                dominant_object_type = [category, object_type_count[category]] if object_type_count[category] > dominant_object_type[1] else dominant_object_type
+            dominant_object_type[1] = dominant_object_type[1] / total_objects_in_cluster
+            result.append(dominant_object_type)
+            print(object_type_count)   
+        return result
+
 
     # It is the number of instance of an object in a cluster over all of the dataset
     def compute_recall(self, feature_belongs_to_cluster, representative):
+        result = []
         for i in range(len(representative)):
-            category_count = {label[0]: 0 for label in self.category}
+            object_type_count = {object_type[0]: 0 for object_type in self.category}
             for j in range(len(feature_belongs_to_cluster)):
                 if feature_belongs_to_cluster[j] == i:
-                    for label in category:
+                    for label in self.category:
                         if label_dataset[j] in label[1]:
-                            category_count[label[0]] += 1
-            print(category_count)
-            for obj in self.category:
-                if obj[0] in category_count:
-                    print(f'{category_count[obj[0]]} / {len(obj[1])}') 
+                            object_type_count[label[0]] += 1
+            # Iterate through all the objects in current cluster and find object type that appeared most divide by all that object type in the whole dataset
+            dominant_object_type = ["label", -1]
+            for category in object_type_count:
+                dominant_object_type = [category, object_type_count[category]] if object_type_count[category] > dominant_object_type[1] else dominant_object_type
+            
+            total_object_type_in_dataset = 0
+            for object_type in self.category:
+                if object_type[0] == dominant_object_type[0]:
+                    total_object_type_in_dataset += len(object_type[1])
+            dominant_object_type[1] = dominant_object_type[1] / total_object_type_in_dataset
+            result.append(dominant_object_type)
+            print(object_type_count)
+        return result
 
     def compute_f_score(self):
         pass
@@ -105,4 +122,6 @@ if __name__ == "__main__":
     cluster = Cluster(label_dataset, feature_dataset, category)
 
     feature_belongs_to_cluster, representative = cluster.k_means(feature_dataset, 4)
-    cluster.compute_recall(feature_belongs_to_cluster, representative)
+    # precision = cluster.compute_precision(feature_belongs_to_cluster, representative)
+    recall = cluster.compute_recall(feature_belongs_to_cluster, representative)
+    print(recall)
