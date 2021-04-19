@@ -69,8 +69,18 @@ if __name__ == "__main__":
     category = dataset_handler.get_label_categories()
     label_dataset = dataset_handler.get_label_dataset()
     feature_dataset = dataset_handler.get_feature_dataset()
+    feature_normalised_dataset = dataset_handler.get_feature_normalised_dataset()
 
     cluster = K_Medians(label_dataset, feature_dataset, category)
 
-    k_medians_algo = cluster.k_medians(4)
+    for i in range(1, 10):
+        feature_belongs_to_cluster, cluster_representative = cluster.k_medians(i)
+        cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
+
+    print(f'{Constant.line}\nNormalised version\n{Constant.line}')
+    normalised_cluster = K_Medians(label_dataset, feature_normalised_dataset, category)
+    for i in range(1, 10):
+        feature_belongs_to_cluster, cluster_representative = normalised_cluster.k_medians(i)
+        cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
+
 

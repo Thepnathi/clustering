@@ -1,4 +1,6 @@
+from constant import Constant
 from abc import ABC, abstractmethod
+from sys import maxsize
 from random import randrange
 
 class Cluster(ABC):
@@ -17,6 +19,7 @@ class Cluster(ABC):
     def compute_random_cluster_representative(self, k: int):
         cluster_representative = []
         for _ in range(k):
+            random_index = randrange(self.dataset_length) 
             random_representative = self.feature_dataset[randrange(self.dataset_length)]
             cluster_representative.append(random_representative)
         return cluster_representative
@@ -49,13 +52,12 @@ class Cluster(ABC):
                             object_type_count[label[0]] += 1
             # Iterate through all the objects in current cluster and find object type that appeared most and divide by total objects in cluster
             total_objects_in_cluster = 0
-            dominant_object_type = ["label", -1]
+            dominant_object_type = ["label", -maxsize]
             for category in object_type_count:
                 total_objects_in_cluster += object_type_count[category]
                 dominant_object_type = [category, object_type_count[category]] if object_type_count[category] > dominant_object_type[1] else dominant_object_type
             dominant_object_type[1] = dominant_object_type[1] / total_objects_in_cluster
             precision_per_cluster.append(dominant_object_type)
-            print(object_type_count)   
         return precision_per_cluster
 
     # It is the number of instance of an object in a cluster over all of the dataset
@@ -69,7 +71,7 @@ class Cluster(ABC):
                         if self.label_dataset[j] in label[1]:
                             object_type_count[label[0]] += 1
             # Iterate through all the objects in current cluster and find object type that appeared most divide by all that object type in the whole dataset
-            dominant_object_type = ["label", -1]
+            dominant_object_type = ["label", -maxsize]
             for category in object_type_count:
                 dominant_object_type = [category, object_type_count[category]] if object_type_count[category] > dominant_object_type[1] else dominant_object_type
             
@@ -91,5 +93,14 @@ class Cluster(ABC):
             f_score_per_cluster.append(f_score)
         return f_score_per_cluster
 
-    def compute_B_CUBED(self, feature_belongs_to_cluster, representative):
-        pass
+    def compute_B_CUBED(self, feature_belongs_to_cluster, cluster_representative, k):
+        print(f'{Constant.line}\nComputing precision for k={k}\n{Constant.line}')
+        precision = self.compute_precision(feature_belongs_to_cluster, cluster_representative)
+        print(f'Precision for each cluster: \n{precision}')
+        print(f'{Constant.line}\nComputing recall for k={k}\n{Constant.line}')
+        recall = self.compute_recall(feature_belongs_to_cluster, cluster_representative)
+        print(f'Recall for each cluster: \n{recall}')
+        print(f'{Constant.line}\nComputing f-score for k={k}\n{Constant.line}')
+        f_score = self.compute_f_score(precision, recall)
+        print(f'F-score for each cluster: \n{f_score}')
+        print("\n")

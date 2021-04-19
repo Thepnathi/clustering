@@ -59,18 +59,19 @@ if __name__ == "__main__":
     data_handler.load_multiple_dataset("animals", "countries", "fruits", "veggies") # Load the four category data files and merge into one
 
     category = data_handler.get_label_categories()
-    label_dataset, feature_dataset = data_handler.get_label_dataset(), data_handler.get_feature_dataset()
+    label_dataset = data_handler.get_label_dataset()
+    feature_dataset = data_handler.get_feature_dataset()
+    feature_normalised_dataset = data_handler.get_feature_normalised_dataset()
+
 
     cluster = K_Means(label_dataset, feature_dataset, category)
-
     for i in range(1, 10):
-        feature_belongs_to_cluster, representative = cluster.k_means(feature_dataset, i)
-        print(f'{Constant.line}\nComputing precision for k={i}\n{Constant.line}')
-        precision = cluster.compute_precision(feature_belongs_to_cluster, representative)
-        print(f'Precision for each cluster: \n{precision}')
-        print(f'{Constant.line}\nComputing recall for k={i}\n{Constant.line}')
-        recall = cluster.compute_recall(feature_belongs_to_cluster, representative)
-        print(f'Recall for each cluster: \n{recall}')
-        print(f'{Constant.line}\nComputing f-score for k={i}\n{Constant.line}')
-        f_score = cluster.compute_f_score(precision, recall)
-        print(f'F-score for each cluster: \n{f_score}')
+        feature_belongs_to_cluster, cluster_representative = cluster.k_means(feature_dataset, i)
+        cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
+
+
+    print(f'{Constant.line}\nNormalised version\n{Constant.line}')
+    normalised_cluster = K_Means(label_dataset, feature_normalised_dataset, category)
+    for i in range(1, 10):
+        feature_belongs_to_cluster, cluster_representative = normalised_cluster.k_means(feature_normalised_dataset, i)
+        normalised_cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
