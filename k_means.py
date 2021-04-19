@@ -2,6 +2,7 @@ from cluster import Cluster
 from dataset_handler import Dataset_Handler
 from constant import Constant
 from sys import maxsize
+from math import sqrt
 from random import randrange
 
 class K_Means(Cluster):
@@ -50,6 +51,12 @@ class K_Means(Cluster):
             representative[i] = [point/total_features_in_cluster for point in new_representative] # Update the current representative with new mean features 
         return representative
 
+    def euclidean_distance(self, vec1, vec2):
+        total = 0
+        for i in range(len(vec1)):
+            total += pow(vec1[i]- vec2[i], 2)
+        return sqrt(total)
+
 if __name__ == "__main__":
     data_handler = Dataset_Handler()
     data_handler.load_multiple_dataset("animals", "countries", "fruits", "veggies") # Load the four category data files and merge into one
@@ -59,7 +66,7 @@ if __name__ == "__main__":
 
     cluster = K_Means(label_dataset, feature_dataset, category)
 
-    for i in range(4, 5):
+    for i in range(9, 10):
         feature_belongs_to_cluster, representative = cluster.k_means(feature_dataset, i)
         print(f'{Constant.line}\nComputing precision for k={i}\n{Constant.line}')
         precision = cluster.compute_precision(feature_belongs_to_cluster, representative)

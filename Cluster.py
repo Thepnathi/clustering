@@ -1,17 +1,38 @@
-from math import sqrt
-from dataset_handler import Dataset_Handler
+from abc import ABC, abstractmethod
+from random import randrange
 
-class Cluster():
+class Cluster(ABC):
     def __init__(self, label_dataset, feature_dataset, category):
         self.label_dataset = label_dataset
         self.feature_dataset = feature_dataset
         self.category = category
+        self.dataset_length = len(self.feature_dataset)
 
-    def euclidean_distance(self, vec1, vec2):
-        total = 0
-        for i in range(len(vec1)):
-            total += pow(vec1[i]- vec2[i], 2)
-        return sqrt(total)
+    @abstractmethod
+    def compute_new_representative(self, representative, feature_belongs_to_cluster):
+        pass
+
+    # Pick k random data or features from the dataset
+    # Improve by not select same data point
+    def compute_random_cluster_representative(self, k: int):
+        cluster_representative = []
+        for _ in range(k):
+            random_representative = self.feature_dataset[randrange(self.dataset_length)]
+            cluster_representative.append(random_representative)
+        return cluster_representative
+    
+    # For each types of objects in cluster. We compute the quantity of each type
+    # We can optimise this further by removing the feature with current index, so next iteration will be less
+    def compute_object_type_quantity_in_cluster(self, feature_belongs_to_cluster, representative_index):
+        object_type_count = {object_type[0]: 0 for object_type in self.category}
+        for i in range(len(feature_belongs_to_cluster)):
+            if feature_belongs_to_cluster[i] == representative_index: # This feature belongs to the current cluster
+                # Now we find out the label of this object and increment that object type by one
+                for label in self.category:
+                    if self.label_dataset[i] in label[1]:
+                        object_type_count[label[0]] += 1
+        return object_type_count
+
         
     # It is the number the same catgory or type of object over all the object in the cluster
     def compute_precision(self, feature_belongs_to_cluster, representative):
@@ -72,9 +93,3 @@ class Cluster():
 
     def compute_B_CUBED(self, feature_belongs_to_cluster, representative):
         pass
-
-
-if __name__ == "__main__":
-    data_handler = Dataset_Handler()
-    data_handler.load_multiple_dataset("animals", "countries", "fruits", "veggies") # Load the four category data files and merge into one
-
