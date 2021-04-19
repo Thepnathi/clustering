@@ -9,7 +9,7 @@ class Cluster(ABC):
         self.dataset_length = len(self.feature_dataset)
 
     @abstractmethod
-    def compute_new_representative(self, representative, feature_belongs_to_cluster):
+    def compute_new_cluster_representatives(self, cluster_representative, feature_belongs_to_cluster):
         pass
 
     # Pick k random data or features from the dataset
