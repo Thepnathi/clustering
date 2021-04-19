@@ -11,11 +11,7 @@ class K_Means(Cluster):
 
     def k_means(self, feature_dataset, k: int):
         # Step 1: Initialisation phase
-        representative = [] # Contains the k representative of clusters or points as the centroid of clusters
-        for _ in range(k):
-            random_representative = feature_dataset[randrange(len(feature_dataset))]  
-            representative.append(random_representative) # What happens if we have the same representative?
-        # Repeat until convergence - (no object has moved or by specified n iteration)
+        representative = self.compute_random_cluster_representative(k) # Contains the k representative of clusters or points as the centroid of clusters
         convergence_steps = 0
         feature_belongs_to_cluster = []
         while True:
@@ -31,7 +27,7 @@ class K_Means(Cluster):
                         closest_rep = j
                 feature_belongs_to_cluster_temp.append(closest_rep)
             # Step 3: Optimisation phase. Calculate new representative - mean of all item within the cluster
-            representative = self.compute_new_representative(representative, feature_belongs_to_cluster_temp, feature_dataset)
+            representative = self.compute_new_cluster_representatives(representative, feature_belongs_to_cluster_temp)
             if feature_belongs_to_cluster_temp == feature_belongs_to_cluster:
                     break
             feature_belongs_to_cluster = feature_belongs_to_cluster_temp
@@ -39,17 +35,18 @@ class K_Means(Cluster):
         return feature_belongs_to_cluster, representative
 
     # For each representative, calculate the mean value of each feature
-    def compute_new_representative(self, representative, feature_belongs_to_cluster_temp, feature_dataset):
-        for i in range(len(representative)): # Loop through each cluster point or representative
+    def compute_new_cluster_representatives(self, cluster_representative, feature_belongs_to_cluster):
+        for i in range(len(cluster_representative)): # Loop through each cluster point or representative
             total_features_in_cluster = 0 # Stores the number of feature in current cluster
-            new_representative = [0] * len(representative[i])
-            for j in range(len(feature_belongs_to_cluster_temp)): # Loop through each feature_cluster
-                if feature_belongs_to_cluster_temp[j] == i:  # A feature belongs to the current cluster point or rep
+            new_representative = [0] * len(cluster_representative[i])
+            for j in range(len(feature_belongs_to_cluster)): # Loop through each feature_cluster
+                if feature_belongs_to_cluster[j] == i:  # A feature belongs to the current cluster point or rep
                     total_features_in_cluster += 1
-                    for f in range(len(feature_dataset[j])): # We loop through the current feature and increment the new rep
-                        new_representative[f] += feature_dataset[j][f]
-            representative[i] = [point/total_features_in_cluster for point in new_representative] # Update the current representative with new mean features 
-        return representative
+                    for f in range(len(self.feature_dataset[j])): # We loop through the current feature and increment the new rep
+                        new_representative[f] += self.feature_dataset[j][f]
+            if total_features_in_cluster > 0: # Some cluster will have no objects, we do not change the cluster rep
+                cluster_representative[i] = [dimension/total_features_in_cluster for dimension in new_representative] # Update the current representative with new mean features 
+        return cluster_representative
 
     def euclidean_distance(self, vec1, vec2):
         total = 0
@@ -66,7 +63,7 @@ if __name__ == "__main__":
 
     cluster = K_Means(label_dataset, feature_dataset, category)
 
-    for i in range(9, 10):
+    for i in range(1, 10):
         feature_belongs_to_cluster, representative = cluster.k_means(feature_dataset, i)
         print(f'{Constant.line}\nComputing precision for k={i}\n{Constant.line}')
         precision = cluster.compute_precision(feature_belongs_to_cluster, representative)
