@@ -7,17 +7,11 @@ fruits contains 58 features
 veggies contains 60 features
 In total, the whole dataset contains 329 objects/features.
 
-## Question
-Do we have to merge the clusters?
- Merge clusters with dominant object type into one. 
- For example, suppose we have 3 clusters and two of them contains mostly fruits objects and one mainly veggies
- and we will merge them together therefore we will be left with two cluster
-
-
 ## Refactor
 * Cluster objects -> instead of list that represent the objects, that points to ith representative. Create a 2-d list with objects belonging to each cluster. Easier to merge later
 * Rename convention -> category to label or class
 * Rename convention -> representative to cluster or cluster centroid
+
 ## Bugs
 
 {'animals': 0, 'countries': 80, 'fruits': 0, 'veggies': 0}
@@ -25,6 +19,7 @@ Do we have to merge the clusters?
 {'animals': 50, 'countries': 0, 'fruits': 59, 'veggies': 61}
 {'animals': 0, 'countries': 27, 'fruits': 0, 'veggies': 0}
 Some reason there is one extra fruits and veggies
+List index out of range during the computation of median representative.
 
 Some improvement is that we can use a smarter way to pick cluster representatives
 For example select an object from each label or object type.

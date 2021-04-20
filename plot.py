@@ -1,32 +1,20 @@
 import matplotlib.pyplot as plt
+from typing import List
 
 class Plot_B_CUBED:
-    def plot(self):
-        # x-axis values
-        x = [1,2,3,4,5,6,7,8,9,10]
-        # y-axis values
-        y = [2,4,5,7,6,8,9,11,12,12]
-        
-        # plotting points as a scatter plot
-        plt.scatter(x, y, label= "stars", color= "green", 
-                    marker= "*", s=30)
-        
-        # x-axis label
-        plt.xlabel('The k values')
-        # frequency label
-        plt.ylabel('B-CUBED precision, recall, and F-score')
-        # plot title
-        plt.title('My scatter plot!')
-        # showing legend
-        plt.legend()
-        
-        # function to show the plot
-        plt.show()
+    def plot_b_cubed(self, precision: List[float], recall: List[float], f_score: List[float], k: List[int], title="B-CUBED Measure",):
+       plt.plot(k, precision, color="red", marker="X", label="Precision")
+       plt.plot(k, recall, color="green", marker="o", label="Recall")
+       plt.plot(k, f_score, color="blue", marker="^", label="F-score")
+       plt.title(title, fontsize=14)
+       plt.xlabel('F values', fontsize=10)
+       plt.ylabel('B-CUBED precision, recall and F-score', fontsize=10)
+       plt.legend(loc="upper left")
+       plt.grid(True)
+       plt.show()
 
-
-  
 
 if __name__ == "__main__":
     plot_tool = Plot_B_CUBED()
-    plot_tool.plot()
+    plot_tool.plot_b_cubed([],[],[],[])
 

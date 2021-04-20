@@ -1,5 +1,6 @@
 from cluster import Cluster_Algorithm
 from dataset_handler import Dataset_Handler
+from plot import Plot_B_CUBED
 from constant import Constant
 from sys import maxsize
 from math import sqrt
@@ -56,6 +57,7 @@ class K_Means_Algorithm(Cluster_Algorithm):
 
 if __name__ == "__main__":
     data_handler = Dataset_Handler()
+    plot_tool = Plot_B_CUBED()
     data_handler.load_multiple_dataset("animals", "countries", "fruits", "veggies") # Load the four category data files and merge into one
 
     category = data_handler.get_label_categories()
@@ -64,16 +66,29 @@ if __name__ == "__main__":
     feature_normalised_dataset = data_handler.get_feature_normalised_dataset()
 
     print(f'\n{Constant.line}\nNormal dataset version\n{Constant.line}\n')
+
     cluster = K_Means_Algorithm(label_dataset, feature_dataset, category)
+    precision_per_k, recall_per_k, f_score_per_k, k_values = [], [], [], []
     for i in range(1, 10):
         feature_belongs_to_cluster, cluster_representative = cluster.k_means(i)
-        b_cubed_result = cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative)
-        print(b_cubed_result)
+        result = cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative)
+        print(result)
+        k_values.append(i)
+        precision_per_k.append(result.precision)
+        recall_per_k.append(result.recall)
+        f_score_per_k.append(result.f_score)
+    plot_tool.plot_b_cubed(precision_per_k, recall_per_k, f_score_per_k, k_values, "K-Means Cluster B-CUBED Measure")
 
     print(f'\n{Constant.line}\nNormalised L2 dataset version\n{Constant.line}\n')
 
     cluster = K_Means_Algorithm(label_dataset, feature_normalised_dataset, category)
+    precision_per_k, recall_per_k, f_score_per_k, k_values = [], [], [], []
     for i in range(1, 10):
         feature_belongs_to_cluster, cluster_representative = cluster.k_means(i)
-        b_cubed_result = cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative)
-        print(b_cubed_result)
+        result = cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative)
+        print(result)
+        k_values.append(i)
+        precision_per_k.append(result.precision)
+        recall_per_k.append(result.recall)
+        f_score_per_k.append(result.f_score)
+    plot_tool.plot_b_cubed(precision_per_k, recall_per_k, f_score_per_k, k_values, "K-Means Cluster B-CUBED Measure L2 Norm")
