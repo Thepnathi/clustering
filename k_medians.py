@@ -63,24 +63,26 @@ class K_Medians_Algorithm(Cluster_Algorithm):
 
 
 if __name__ == "__main__":
-    dataset_handler = Dataset_Handler()
-    dataset_handler.load_multiple_dataset("animals", "countries", "fruits", "veggies")
+    data_handler = Dataset_Handler()
+    data_handler.load_multiple_dataset("animals", "countries", "fruits", "veggies") # Load the four category data files and merge into one
 
-    category = dataset_handler.get_label_categories()
-    label_dataset = dataset_handler.get_label_dataset()
-    feature_dataset = dataset_handler.get_feature_dataset()
-    feature_normalised_dataset = dataset_handler.get_feature_normalised_dataset()
+    category = data_handler.get_label_categories()
+    label_dataset = data_handler.get_label_dataset()
+    feature_dataset = data_handler.get_feature_dataset()
+    feature_normalised_dataset = data_handler.get_feature_normalised_dataset()
 
+    print(f'\n{Constant.line}\nNormal dataset version\n{Constant.line}\n')
     cluster = K_Medians_Algorithm(label_dataset, feature_dataset, category)
-
     for i in range(1, 10):
         feature_belongs_to_cluster, cluster_representative = cluster.k_medians(i)
-        cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
+        b_cubed_result = cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative)
+        print(b_cubed_result)
 
-    print(f'{Constant.line}\nNormalised version\n{Constant.line}')
-    normalised_cluster = K_Medians_Algorithm(label_dataset, feature_normalised_dataset, category)
+    print(f'\n{Constant.line}\nNormalised L2 dataset version\n{Constant.line}\n')
+
+    cluster = K_Medians_Algorithm(label_dataset, feature_normalised_dataset, category)
     for i in range(1, 10):
-        feature_belongs_to_cluster, cluster_representative = normalised_cluster.k_medians(i)
-        cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
-
+        feature_belongs_to_cluster, cluster_representative = cluster.k_medians(i)
+        b_cubed_result = cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative)
+        print(b_cubed_result)
 

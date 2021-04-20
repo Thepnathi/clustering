@@ -1,6 +1,7 @@
 from constant import Constant
 from abc import ABC, abstractmethod
 from sys import maxsize
+from collections import namedtuple
 from random import randrange
 
 class Cluster_Algorithm(ABC):
@@ -53,9 +54,6 @@ class Cluster_Algorithm(ABC):
             for label in object_type_count:
                 objects_precision = [object_type_count[label]/total_objects_in_cluster] * object_type_count[label]
                 precision_per_object += objects_precision
-            print(object_type_count)
-            print(total_objects_in_cluster)
-        print(len(precision_per_object))
         return precision_per_object
 
     def compute_recall(self, feature_belongs_to_cluster, cluster_representative):
@@ -73,28 +71,27 @@ class Cluster_Algorithm(ABC):
             for label in object_type_count:
                 object_recall = [object_type_count[label]/dataset_count_by_object[label]] * object_type_count[label]
                 recall_per_object += object_recall
-            print(object_type_count)
-        print(len(recall_per_object))
         return recall_per_object
 
-    def compute_f_score(self, precision_per_cluster, recall_per_cluster):
-        f_score_per_cluster = []
-        for i in range(len(precision_per_cluster)):
-            precision = precision_per_cluster[i][1]
-            recall = recall_per_cluster[i][1]
-            f_score = (2 * precision * recall) / (precision + recall) 
-            f_score_per_cluster.append(f_score)
-        return f_score_per_cluster
+    def compute_f_score(self, precision_per_object, recall_per_object):
+        f_score_per_object = []
+        for i in range(len(precision_per_object)):
+            precision = precision_per_object[i]
+            recall = recall_per_object[i]
+            f_score = (2 * precision * recall) / (precision + recall)
+            f_score_per_object.append(f_score)
+        return f_score_per_object
 
-    def compute_B_CUBED(self, feature_belongs_to_cluster, cluster_representative, k):
-        # print(f'{Constant.line}\nComputing precision for k={k}\n{Constant.line}')
+    def compute_B_CUBED(self, feature_belongs_to_cluster, cluster_representative):
+        B_CUBED = namedtuple('B_CUBED', 'precision recall f_score')
+        total_objects_in_cluster = len(feature_belongs_to_cluster)
         precision_per_object = self.compute_precision(feature_belongs_to_cluster, cluster_representative)
-        # print(f'Precision for each cluster: \n{precision}')
-        # print(f'{Constant.line}\nComputing recall for k={k}\n{Constant.line}')
         recall_per_object = self.compute_recall(feature_belongs_to_cluster, cluster_representative)
-        # print(f'Recall for each cluster: \n{recall}')
+        f_score_per_object = self.compute_f_score(precision_per_object, recall_per_object)  
 
-        # print(f'{Constant.line}\nComputing f-score for k={k}\n{Constant.line}')
-        # f_score = self.compute_f_score(precision, recall)
-        # print(f'F-score for each cluster: \n{f_score}')
-        # print("\n")
+        average_precision = sum(precision_per_object) / total_objects_in_cluster
+        average_recall = sum(recall_per_object) / total_objects_in_cluster
+        average_f_score = sum(f_score_per_object) / total_objects_in_cluster
+        
+        result = B_CUBED(precision=average_precision, recall=average_recall, f_score=average_f_score)
+        return result

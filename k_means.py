@@ -9,7 +9,7 @@ class K_Means_Algorithm(Cluster_Algorithm):
     def __init__(self, label_dataset, feature_dataset, category):
         super().__init__(label_dataset, feature_dataset, category)
 
-    def k_means(self, feature_dataset, k: int):
+    def k_means(self, k: int):
         # Step 1: Initialisation phase
         representative = self.compute_random_cluster_representative(k) # Contains the k representative of clusters or points as the centroid of clusters
         convergence_steps = 0
@@ -18,7 +18,7 @@ class K_Means_Algorithm(Cluster_Algorithm):
             convergence_steps += 1
             # Step 2: Assignment phase.  Assign each feature points to a cluster or representative
             feature_belongs_to_cluster_temp = []     # Stores the index of representative that match the index feature dataset
-            for _, row in enumerate(feature_dataset):
+            for _, row in enumerate(self.feature_dataset):
                 min_dist, closest_rep = maxsize, None
                 for j in range(len(representative)):
                     distance = self.euclidean_distance(representative[j], row)
@@ -63,15 +63,17 @@ if __name__ == "__main__":
     feature_dataset = data_handler.get_feature_dataset()
     feature_normalised_dataset = data_handler.get_feature_normalised_dataset()
 
-
+    print(f'\n{Constant.line}\nNormal dataset version\n{Constant.line}\n')
     cluster = K_Means_Algorithm(label_dataset, feature_dataset, category)
-    for i in range(4, 5):
-        feature_belongs_to_cluster, cluster_representative = cluster.k_means(feature_dataset, i)
-        cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
+    for i in range(1, 10):
+        feature_belongs_to_cluster, cluster_representative = cluster.k_means(i)
+        b_cubed_result = cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative)
+        print(b_cubed_result)
 
+    print(f'\n{Constant.line}\nNormalised L2 dataset version\n{Constant.line}\n')
 
-    # print(f'{Constant.line}\nNormalised version\n{Constant.line}')
-    # normalised_cluster = K_Means_Algorithm(label_dataset, feature_normalised_dataset, category)
-    # for i in range(1, 10):
-    #     feature_belongs_to_cluster, cluster_representative = normalised_cluster.k_means(feature_normalised_dataset, i)
-    #     normalised_cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
+    cluster = K_Means_Algorithm(label_dataset, feature_normalised_dataset, category)
+    for i in range(1, 10):
+        feature_belongs_to_cluster, cluster_representative = cluster.k_means(i)
+        b_cubed_result = cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative)
+        print(b_cubed_result)
