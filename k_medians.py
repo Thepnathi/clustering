@@ -1,9 +1,9 @@
-from cluster import Cluster
+from cluster import Cluster_Algorithm
 from dataset_handler import Dataset_Handler
 from constant import Constant
 from sys import maxsize
 
-class K_Medians(Cluster):
+class K_Medians_Algorithm(Cluster_Algorithm):
     def __init__(self, label_dataset, feature_dataset, category):
         super().__init__(label_dataset, feature_dataset, category)
 
@@ -71,14 +71,14 @@ if __name__ == "__main__":
     feature_dataset = dataset_handler.get_feature_dataset()
     feature_normalised_dataset = dataset_handler.get_feature_normalised_dataset()
 
-    cluster = K_Medians(label_dataset, feature_dataset, category)
+    cluster = K_Medians_Algorithm(label_dataset, feature_dataset, category)
 
     for i in range(1, 10):
         feature_belongs_to_cluster, cluster_representative = cluster.k_medians(i)
         cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
 
     print(f'{Constant.line}\nNormalised version\n{Constant.line}')
-    normalised_cluster = K_Medians(label_dataset, feature_normalised_dataset, category)
+    normalised_cluster = K_Medians_Algorithm(label_dataset, feature_normalised_dataset, category)
     for i in range(1, 10):
         feature_belongs_to_cluster, cluster_representative = normalised_cluster.k_medians(i)
         cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from sys import maxsize
 from random import randrange
 
-class Cluster(ABC):
+class Cluster_Algorithm(ABC):
     def __init__(self, label_dataset, feature_dataset, category):
         self.label_dataset = label_dataset
         self.feature_dataset = feature_dataset
