@@ -36,29 +36,27 @@ class Cluster_Algorithm(ABC):
                         object_type_count[label[0]] += 1
         return object_type_count
 
-        
-    # It is the number the same catgory or type of object over all the object in the cluster
-    def compute_precision(self, feature_belongs_to_cluster, representative):
-        precision_per_cluster = []
-        # for each cluster we will calculate the dominant label
-        for i in range(len(representative)):
+    def compute_precision(self, feature_belongs_to_cluster, cluster_representative):
+        precision_per_object = []
+        # Iterate through each cluster and find objects within this cluster
+        for i in range(len(cluster_representative)):
             object_type_count = {object_type[0]: 0 for object_type in self.category}
-            # Iterate through the whole feature dataset with the label to indicate which cluster it belongs to 
+            # Iterate through the list with the value that indicate which cluster it belongs to
             for j in range(len(feature_belongs_to_cluster)):
-                if feature_belongs_to_cluster[j] == i: # This feature belongs to the current cluster
-                    # Now we want to find out what it is 
+                if feature_belongs_to_cluster[j] == i: # This feature belongs to the current cluster rep
+                    # Now we find out what the object type is and increment the count
                     for label in self.category:
-                        if self.label_dataset[j] in label[1]:
+                        if self.label_dataset[j] in label[1]:  # Label dataset share same index as the list
                             object_type_count[label[0]] += 1
-            # Iterate through all the objects in current cluster and find object type that appeared most and divide by total objects in cluster
-            total_objects_in_cluster = 0
-            dominant_object_type = ["label", -maxsize]
-            for category in object_type_count:
-                total_objects_in_cluster += object_type_count[category]
-                dominant_object_type = [category, object_type_count[category]] if object_type_count[category] > dominant_object_type[1] else dominant_object_type
-            dominant_object_type[1] = dominant_object_type[1] / total_objects_in_cluster
-            precision_per_cluster.append(dominant_object_type)
-        return precision_per_cluster
+            # Now we calculate the precision for every object in this cluster and append to list
+            total_objects_in_cluster = sum([object_type_count[label] for label in object_type_count])
+            for label in object_type_count:
+                objects_precision = [object_type_count[label]/total_objects_in_cluster] * object_type_count[label]
+                precision_per_object += objects_precision
+            print(object_type_count)
+            print(total_objects_in_cluster)
+        print(len(precision_per_object))
+        return precision_per_object
 
     # It is the number of instance of an object in a cluster over all of the dataset
     def compute_recall(self, feature_belongs_to_cluster, representative):
@@ -97,10 +95,10 @@ class Cluster_Algorithm(ABC):
         print(f'{Constant.line}\nComputing precision for k={k}\n{Constant.line}')
         precision = self.compute_precision(feature_belongs_to_cluster, cluster_representative)
         print(f'Precision for each cluster: \n{precision}')
-        print(f'{Constant.line}\nComputing recall for k={k}\n{Constant.line}')
-        recall = self.compute_recall(feature_belongs_to_cluster, cluster_representative)
-        print(f'Recall for each cluster: \n{recall}')
-        print(f'{Constant.line}\nComputing f-score for k={k}\n{Constant.line}')
-        f_score = self.compute_f_score(precision, recall)
-        print(f'F-score for each cluster: \n{f_score}')
-        print("\n")
+        # print(f'{Constant.line}\nComputing recall for k={k}\n{Constant.line}')
+        # recall = self.compute_recall(feature_belongs_to_cluster, cluster_representative)
+        # print(f'Recall for each cluster: \n{recall}')
+        # print(f'{Constant.line}\nComputing f-score for k={k}\n{Constant.line}')
+        # f_score = self.compute_f_score(precision, recall)
+        # print(f'F-score for each cluster: \n{f_score}')
+        # print("\n")

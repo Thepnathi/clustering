@@ -65,13 +65,13 @@ if __name__ == "__main__":
 
 
     cluster = K_Means_Algorithm(label_dataset, feature_dataset, category)
-    for i in range(1, 10):
+    for i in range(4, 5):
         feature_belongs_to_cluster, cluster_representative = cluster.k_means(feature_dataset, i)
         cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
 
 
-    print(f'{Constant.line}\nNormalised version\n{Constant.line}')
-    normalised_cluster = K_Means_Algorithm(label_dataset, feature_normalised_dataset, category)
-    for i in range(1, 10):
-        feature_belongs_to_cluster, cluster_representative = normalised_cluster.k_means(feature_normalised_dataset, i)
-        normalised_cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
+    # print(f'{Constant.line}\nNormalised version\n{Constant.line}')
+    # normalised_cluster = K_Means_Algorithm(label_dataset, feature_normalised_dataset, category)
+    # for i in range(1, 10):
+    #     feature_belongs_to_cluster, cluster_representative = normalised_cluster.k_means(feature_normalised_dataset, i)
+    #     normalised_cluster.compute_B_CUBED(feature_belongs_to_cluster, cluster_representative, i)
