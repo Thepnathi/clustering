@@ -58,29 +58,24 @@ class Cluster_Algorithm(ABC):
         print(len(precision_per_object))
         return precision_per_object
 
-    # It is the number of instance of an object in a cluster over all of the dataset
-    def compute_recall(self, feature_belongs_to_cluster, representative):
-        recall_per_cluster = []
-        for i in range(len(representative)):
+    def compute_recall(self, feature_belongs_to_cluster, cluster_representative):
+        recall_per_object = []
+        # Iterate through each cluster and find objects within this cluster
+        # Follows through the same principle as precision except the last part
+        for i in range(len(cluster_representative)):
             object_type_count = {object_type[0]: 0 for object_type in self.category}
             for j in range(len(feature_belongs_to_cluster)):
                 if feature_belongs_to_cluster[j] == i:
                     for label in self.category:
                         if self.label_dataset[j] in label[1]:
                             object_type_count[label[0]] += 1
-            # Iterate through all the objects in current cluster and find object type that appeared most divide by all that object type in the whole dataset
-            dominant_object_type = ["label", -maxsize]
-            for category in object_type_count:
-                dominant_object_type = [category, object_type_count[category]] if object_type_count[category] > dominant_object_type[1] else dominant_object_type
-            
-            total_object_type_in_dataset = 0
-            for object_type in self.category:
-                if object_type[0] == dominant_object_type[0]:
-                    total_object_type_in_dataset += len(object_type[1])
-            dominant_object_type[1] = dominant_object_type[1] / total_object_type_in_dataset
-            recall_per_cluster.append(dominant_object_type)
+            dataset_count_by_object = {object_type[0]:len(object_type[1]) for object_type in self.category}
+            for label in object_type_count:
+                object_recall = [object_type_count[label]/dataset_count_by_object[label]] * object_type_count[label]
+                recall_per_object += object_recall
             print(object_type_count)
-        return recall_per_cluster
+        print(len(recall_per_object))
+        return recall_per_object
 
     def compute_f_score(self, precision_per_cluster, recall_per_cluster):
         f_score_per_cluster = []
@@ -92,12 +87,13 @@ class Cluster_Algorithm(ABC):
         return f_score_per_cluster
 
     def compute_B_CUBED(self, feature_belongs_to_cluster, cluster_representative, k):
-        print(f'{Constant.line}\nComputing precision for k={k}\n{Constant.line}')
-        precision = self.compute_precision(feature_belongs_to_cluster, cluster_representative)
-        print(f'Precision for each cluster: \n{precision}')
+        # print(f'{Constant.line}\nComputing precision for k={k}\n{Constant.line}')
+        precision_per_object = self.compute_precision(feature_belongs_to_cluster, cluster_representative)
+        # print(f'Precision for each cluster: \n{precision}')
         # print(f'{Constant.line}\nComputing recall for k={k}\n{Constant.line}')
-        # recall = self.compute_recall(feature_belongs_to_cluster, cluster_representative)
+        recall_per_object = self.compute_recall(feature_belongs_to_cluster, cluster_representative)
         # print(f'Recall for each cluster: \n{recall}')
+
         # print(f'{Constant.line}\nComputing f-score for k={k}\n{Constant.line}')
         # f_score = self.compute_f_score(precision, recall)
         # print(f'F-score for each cluster: \n{f_score}')
