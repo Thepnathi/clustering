@@ -19,8 +19,13 @@ class Cluster_Algorithm(ABC):
     # Improve by not select same data point
     def compute_random_cluster_representative(self, k: int):
         cluster_representative = []
+        feature_index = set()
         for _ in range(k):
             random_index = randrange(self.dataset_length) 
+            if random_index in feature_index:       
+                while random_index in feature_index: # prevents the program from selecting the same feature as the representative
+                    random_index = randrange(self.dataset_length) 
+            feature_index.add(random_index)
             random_representative = self.feature_dataset[randrange(self.dataset_length)]
             cluster_representative.append(random_representative)
         return cluster_representative

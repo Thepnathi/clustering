@@ -60,14 +60,21 @@ class Dataset_Handler:
         self.feature_normalised_dataset = feature_normalised_dataset
 
     def normalise_l2_vector(self, vec):
-        norm = np.linalg.norm(vec)
+        norm = np.linalg.norm(vec, ord=2)
         return vec/norm
 
+    def test_l2_unit_vectors(self, normalised_vectors):
+        normalised_vectors = np.array(normalised_vectors)
+        squared_vectors = normalised_vectors ** 2
+        sum_squared_vectors = np.sum(squared_vectors, axis=1)
+        return sum_squared_vectors
+
+from sklearn import preprocessing
+import math
 
 if __name__ == "__main__":
     data_handler = Dataset_Handler()
-
-    a, b, c = data_handler.load_dataset('animals')
+    # a, b, c = data_handler.load_dataset('animals')
 
     data_handler.load_multiple_dataset("animals", "countries", "fruits", "veggies")
 
@@ -76,5 +83,5 @@ if __name__ == "__main__":
     feature = data_handler.get_feature_dataset()
     feature_normalised = data_handler.get_feature_normalised_dataset()
 
-    for i in range(len(feature_normalised)):
-        print(f'{label[i]} - {feature_normalised[i]}')
+    # Test l2 unit vector - all object should output 1 after normalised
+    print(data_handler.test_l2_unit_vectors(feature_normalised))

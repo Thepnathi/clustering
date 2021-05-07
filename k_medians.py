@@ -46,14 +46,19 @@ class K_Medians_Algorithm(Cluster_Algorithm):
 
             for m in range(len(median_incrementer)):   # Now we compute the median for each dimension
                 median_incrementer[m] = sorted(median_incrementer[m][1:]) # We sort all the values and take the median
-                if total_objects_in_cluster % 2 == 0:   # Even number of values, we calculate the mod between two values of middle
-                    lower_mid = median_incrementer[m][(total_objects_in_cluster//2)-1]
-                    upper_mid = median_incrementer[m][total_objects_in_cluster//2]
-                    median = (lower_mid + upper_mid) / 2
-                    cluster_representative[i][m] = median
-                else:
-                    median = median_incrementer[m][(total_objects_in_cluster//2)]
-                    cluster_representative[i][m] = median
+                dimension_len = len(median_incrementer[m])
+                if dimension_len != 0:
+                    if total_objects_in_cluster % 2 == 0:   # Even number of values, we calculate the mod between two values of middle
+                        # print(f'Length of current dimension is {len(median_incrementer[m])}')
+                        # print(f'Compute the lower bound is {(total_objects_in_cluster//2)-1}')
+                        # print(f'Compute the upper bound is {total_objects_in_cluster//2}')
+                        lower_mid = median_incrementer[m][(total_objects_in_cluster//2)-1]
+                        upper_mid = median_incrementer[m][total_objects_in_cluster//2]
+                        median = (lower_mid + upper_mid) / 2
+                        cluster_representative[i][m] = median
+                    else:
+                        median = median_incrementer[m][(total_objects_in_cluster//2)]
+                        cluster_representative[i][m] = median
         return cluster_representative
 
     def manhattan_distance(self, vec1, vec2):
